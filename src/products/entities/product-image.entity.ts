@@ -8,7 +8,7 @@ export class ProductImage {
 
     @Column({type: 'varchar', nullable: true})
     url: string;
-    
+}   
 //Relaciones
 
 @ManyToOne(() => Product, (product) => product.images, {

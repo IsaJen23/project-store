@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { UserImage } from '../entities/user-image.entity';
 
 @Entity()
 export class User {
@@ -19,4 +20,12 @@ export class User {
 
   @Column({ type: 'boolean', default: true })
   active: boolean;
+    image: any;
+
+
+  //relaciones
+  @OneToMany(() => UserImage, (userImage) => userImage.user, {
+    cascade : true
+
+   images?:UserImage[];
 }

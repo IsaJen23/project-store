@@ -44,23 +44,4 @@ export class Product {
   })
   autor: User;
 
-  @ManyToOne(() => Category)
-  @JoinColumn({
-    name: 'category_id', //el campo que relaciona a mi tabla
-    referencedColumnName: 'id' //este es el id del usuario
-  })
-  categoria: Category;
-
-  @ManyToOne(() => Proveedor)
-  @JoinColumn({
-    name: 'proveedor_id', //el campo que relaciona a mi tabla
-    referencedColumnName: 'id' //este es el id del usuario
-  })
-  proveedor: Proveedor;
-
-  @OneToMany(() => ProductImage, (productImage) => productImage.product, {
-    cascade: true
-  })
-  images?: ProductImage[]
-  
 }

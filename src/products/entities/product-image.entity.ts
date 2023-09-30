@@ -8,12 +8,12 @@ export class ProductImage {
 
     @Column({type: 'varchar', nullable: true})
     url: string;
-}   
-//Relaciones
+    
+    //Relaciones
 
-@ManyToOne(() => Product, (product) => product.images, {
-    onDelete: 'CASCADE',
-})
-product: Product;
+    @ManyToOne(() => Product, (product) => product.images, {
+        onDelete: 'CASCADE',
+    })
+    product: Product;
 
 }

@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsBoolean,
   IsNotEmpty,
   IsNumber,
@@ -33,4 +34,9 @@ export class CreateUserDto {
   @IsBoolean()
   @IsOptional()
   active: boolean;
+
+  @IsArray({each:true})
+  @IsString()
+  @IsOptional()
+  images?: string[];
 }

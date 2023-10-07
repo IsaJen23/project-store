@@ -56,6 +56,9 @@ export class ProductsService{
         return   this.productRepo.find({
             order: {id: 'ASC'},
             relations: {
+                autor: true,
+                categoria: true,
+                proveedor: true,
                 images: true,
             },
         });
@@ -66,15 +69,6 @@ export class ProductsService{
         await this.productRepo.remove(product);
         return 'Producto eliminado';
     }
-
-    //actualizar un registro
-    // async update(id: number, cambios: CreateProductDto){
-    //     const oldProduct = await this.findOne(id);
-    //     const updateProduct = await this.productRepo.merge(oldProduct, cambios);
-    //     return this.productRepo.save(updateProduct);
-    // }
-
-    //Actualizar un producto con imagenes
     async update(id: number, cambios: CreateProductDto){
         const {images, ...updateAll } = cambios;
         const product = await this.productRepo.preload({
@@ -85,7 +79,7 @@ export class ProductsService{
 
         
         });
-        //correr el queryRunner, esto seria el punto de partida de nuestra transaccion 
+        //correr el queryRunner
 
         const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
@@ -108,7 +102,6 @@ export class ProductsService{
         //finalizamos la transaccion y liberamos el queryRunner
         await queryRunner.commitTransaction();
         await queryRunner.release();
-
         return product;
     }
 }

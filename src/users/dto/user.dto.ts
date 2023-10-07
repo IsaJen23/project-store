@@ -35,7 +35,7 @@ export class CreateUserDto {
   @IsOptional()
   active: boolean;
 
-  @IsArray({each:true})
+  @IsArray({ each: true })
   @IsString()
   @IsOptional()
   images?: string[];

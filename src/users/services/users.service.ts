@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { CreateUserDto } from '../dto/user.dto';
-import { UserImage } from '../entities/user-image.entity';import { DataSource } from 'typeorm';
+import { UserImage } from '../entities/user-image.entity';
 
 @Injectable()
 export class UsersService{
@@ -12,72 +12,81 @@ export class UsersService{
         private userRepo: Repository<User>,
 
         @InjectRepository(UserImage)
-        private readonly imageRepository: Repository<UserImage>,
-        
+        private readonly userImageRepo: Repository<UserImage>,
+
         private readonly dataSource: DataSource,
     ){}
 
-    async create (createUserDto: CreateUserDto){
-        const {images = [], ...detailUser} = createUserDto;
-        const user = await this.userRepo.create({
-            ...detailUser,
-            image:images.map((image) => this.imageRepository.create({url:image}))
-        })
+    async create(userDto:CreateUserDto){
+        const { images = [], ...detailsUser} = userDto;
 
-        await this.userRepo.save(user);
+        const user = await this.userRepo.create({
+            ...detailsUser,
+            images: images.map((image) => this.userImageRepo.create({ url: image }),
+            ),
+        });
+        await  this.userRepo.save(user);
         return user;
     }
-    }
-    //Encontrar un user
+    //Encontrar 
     findOne(id: number){
-        return this.userRepo.findOne({  
-            where:{id},
-            relations:{
-            images:true
-        }});
-    }
-    //mostrar todos los usuarios
-    findAll(){
-        return this.userRepo.find({
-            order: {id: 'ASC'},
-            relations:{
-            images:true}
+        return this.userRepo.findOne({
+            where: {id},
+            relations: {
+                images: true,
+            },
         });
     }
-    //eliminar un usuario
+    //mostrar 
+    findAll(){
+        return   this.userRepo.find({
+            order: {id: 'ASC'},
+            relations: {
+                images: true,
+            },
+        });
+    }
+    //eliminar 
     async remove(id:number){
         const user =await this.findOne(id);
         await this.userRepo.remove(user);
         return 'Usuario eliminado';
     }
 
-    //actualizar un usuario
-    async update(id: number, userDto: CreateUserDto){
-        const {images, ...updateAll} = userDto
+    //actualizar un usuario-imagenes
+    async update(id: number, cambios: CreateUserDto){
+        const {images, ...updateAll } = cambios;
         const user = await this.userRepo.preload({
-            id:id,
-            ... updateAll
+            id: id,
+            //operador para esparcir
+            ...updateAll,     //Esparcir todos los datos 
+            
+
+        
         });
+        //correr el queryRunner
 
         const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
 
-        if(images){
-            await queryRunner.manager.delete(UserImage, {user: {id}});
-
-            user.images = images.map((image)=>
-                this.userImageRepo.create({url: image}),
-            )
-
-        }else{
-            user.images =await this.userImageRepo.findBy({ user: {id}});
+        if(images) {
+            //sino esta vacio borramos las imagenes existentes
+            await queryRunner.manager.delete(UserImage, {user: { id }});
+            
+            //creamos nuevas imagenes
+            user.images = images.map((image) =>
+            this.userImageRepo.create({ url: image }),
+            );
+        } else {
+            user.images = await this.userImageRepo.findBy({ user: { id }});
         }
-
+        //guardamos el usuario
         await queryRunner.manager.save(user);
 
+        //finalizamos la transaccion y liberamos el queryRunner
         await queryRunner.commitTransaction();
         await queryRunner.release();
-
         return user;
-    }}
+    }
+}

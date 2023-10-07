@@ -1,18 +1,21 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { User } from '../entities/user.entity';
+import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "./user.entity";
+
+
 
 @Entity()
-export class UserImage {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class UserImage{
+    @PrimaryGeneratedColumn({type: 'int4'})
+    id: number;
 
-  @Column()
-  imageUrl: string;
+    @Column({ type: 'varchar',  nullable: true })
+    url: string;
 
-  // Establece la relación con el usuario propietario de la imagen
-  @ManyToOne(() => User, (user) => user.images,{
-    onDelete:'CASCADE'
-  })
-  user: User;
+    //Muchas imagenes seran de un producto
+    @ManyToOne(() => User, (user) => user.images, {
+        onDelete: 'CASCADE',
+    })
 
+    user: User;
+    
 }

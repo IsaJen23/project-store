@@ -1,5 +1,5 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { UserImage } from '../entities/user-image.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { UserImage } from './user-image.entity';
 
 @Entity()
 export class User {
@@ -18,14 +18,14 @@ export class User {
   @Column({ type: 'varchar', nullable: false })
   sexo: string;
 
+  @Column({ type: 'varchar',  nullable: true })
+  filename: string;
+
   @Column({ type: 'boolean', default: true })
   active: boolean;
-    image: any;
 
-
-  //relaciones
   @OneToMany(() => UserImage, (userImage) => userImage.user, {
-    cascade : true
-
-   images?:UserImage[];
+    cascade: true,
+  })
+  images?: UserImage[];
 }
